@@ -53,7 +53,7 @@
 					<td th:text="${movieRow.rating}"></td>
 					<td th:text="${movieRow.priority}"></td>
 					<td th:text="${movieRow.comment}"></td>
-					<td><button type="button" class="btn btn-outline-info">Update</button></td>
+					<td><a type="button" class="btn btn-outline-info" th:href="@{/movie-entry(id=${movieRow.id})}">Update</a></td>
 				</tr>
 			</tbody>
 		</table>

@@ -17,6 +17,10 @@ public class MovieService {
 	public List<Movie> getAllMovies() throws Exception {
 		return movieRepo.findAll();
 	}
+	
+	public Movie getMovieById(Long id) throws Exception{
+		return movieRepo.findById(id).get();
+	}
 
 	public void saveMovie(Movie movie) throws Exception {
 		try {
@@ -25,6 +29,15 @@ public class MovieService {
 			System.out.println("Error in saving movie details");
 			throw e;
 		}
-
 	}
+	
+	public void updateMovieDetails(Movie existingMovie){
+		try {
+			movieRepo.save(existingMovie);
+		} catch (Exception e){
+			e.printStackTrace();
+			throw e;
+		}
+	}
+	
 }

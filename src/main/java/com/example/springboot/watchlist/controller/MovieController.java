@@ -7,6 +7,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
@@ -40,20 +41,35 @@ public class MovieController {
 	}
 
 	@GetMapping("/movie-entry")
-	public ModelAndView getMovieForm() {
+	public ModelAndView getMovieForm(@RequestParam(name = "id", required = false) Long id) {
 		System.out.println("GET: /movie-entry");
 		ModelAndView modelAndView = new ModelAndView();
 		modelAndView.setViewName("movie-form");
-		Movie movie = new Movie();
-		modelAndView.addObject("movieObject", movie);
+		if (id != null) {
+			System.out.println("Existing movie");
+			try {
+				modelAndView.addObject("movieObject", movieService.getMovieById(id));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		} else {
+			modelAndView.addObject("movieObject", new Movie());
+		}
 		return modelAndView;
 	}
 
 	@PostMapping("/watchlist-movie")
-	public ModelAndView submitMovieDetailsAndShowAllMovies(Movie movie) {
+	public ModelAndView submitMovieDetailsAndShowAllMovies(Movie movie, @RequestParam(name = "id", required = false) Long id) {
 		System.out.println("POST: /watchlist-movies");
+		System.out.println(movie);
 		try {
-			movieService.saveMovie(movie);
+			if (movie.getId() != null) {
+				System.out.println("Updating the details.");
+				movieService.updateMovieDetails(movie);
+			} else {
+				System.out.println("Saving the details.");
+				movieService.saveMovie(movie);
+			}
 			RedirectView redirectToWatchlistMoviesPage = new RedirectView();
 			redirectToWatchlistMoviesPage.setUrl("/movies");
 			return new ModelAndView(redirectToWatchlistMoviesPage);

@@ -37,7 +37,7 @@
 	<div class="row mt-4">
 		<div class="col-3"></div>
 		<div class="col-6">
-			<form class="container" method="post" th:action="@{/watchlist-movie}"
+			<form class="container" method="post" th:action="@{/watchlist-movie(id=${movieObject.id})}"
 				th:object="${movieObject}">
 				<h3 align="center">Submit an item</h3>
 				<hr class="col-5" />
