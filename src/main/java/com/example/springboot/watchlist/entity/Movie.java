@@ -12,12 +12,20 @@ public class Movie {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	private String title;
-	private float rating;
-	private int priority;
+	private Float rating;
+	private Integer priority;
 	private String comment;
 
 	public Movie() {
 		super();
+	}
+
+	public Movie(String title, Float rating, Integer priority, String comment) {
+		super();
+		this.title = title;
+		this.rating = rating;
+		this.priority = priority;
+		this.comment = comment;
 	}
 
 	public Long getId() {
@@ -28,14 +36,6 @@ public class Movie {
 		this.id = id;
 	}
 
-	public Movie(String title, float rating, int priority, String comment) {
-		super();
-		this.title = title;
-		this.rating = rating;
-		this.priority = priority;
-		this.comment = comment;
-	}
-
 	public String getTitle() {
 		return title;
 	}
@@ -44,19 +44,19 @@ public class Movie {
 		this.title = title;
 	}
 
-	public float getRating() {
+	public Float getRating() {
 		return rating;
 	}
 
-	public void setRating(float rating) {
+	public void setRating(Float rating) {
 		this.rating = rating;
 	}
 
-	public int getPriority() {
+	public Integer getPriority() {
 		return priority;
 	}
 
-	public void setPriority(int priority) {
+	public void setPriority(Integer priority) {
 		this.priority = priority;
 	}
 
