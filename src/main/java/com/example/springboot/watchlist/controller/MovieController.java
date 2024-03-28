@@ -59,7 +59,7 @@ public class MovieController {
 	}
 
 	@PostMapping("/watchlist-movie")
-	public ModelAndView submitMovieDetailsAndShowAllMovies(Movie movie, @RequestParam(name = "id", required = false) Long id) {
+	public ModelAndView submitMovieDetailsAndShowAllMovies(Movie movie) {
 		System.out.println("POST: /watchlist-movies");
 		System.out.println(movie);
 		try {
