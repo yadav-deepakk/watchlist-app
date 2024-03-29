@@ -62,7 +62,16 @@ public class MovieController {
 	public ModelAndView submitMovieDetailsAndShowAllMovies(Movie movie) {
 		System.out.println("POST: /watchlist-movies");
 		System.out.println(movie);
+
 		try {
+			// if same movie has a different rating in imdb then use that one.
+			Float omdbRating = movieService.omdbMovieRating(movie.getTitle());
+			if (omdbRating != null) {
+				System.out.println("Ignoring entry-form rating and Using OMDB rating...");
+				System.out.println("OMDB Rating: " + omdbRating);
+				movie.setRating(omdbRating);
+			}
+
 			if (movie.getId() != null) {
 				System.out.println("Updating the details.");
 				movieService.updateMovieDetails(movie);
@@ -73,6 +82,7 @@ public class MovieController {
 			RedirectView redirectToWatchlistMoviesPage = new RedirectView();
 			redirectToWatchlistMoviesPage.setUrl("/movies");
 			return new ModelAndView(redirectToWatchlistMoviesPage);
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			RedirectView errorPage = new RedirectView();

@@ -13,6 +13,13 @@ public class MovieService {
 
 	@Autowired
 	MovieRepository movieRepo;
+	
+	@Autowired
+	OMDBService omdbService; 
+	
+	public Float omdbMovieRating(String title) throws Exception{
+		return omdbService.getMovieRating(title);
+	}
 
 	public List<Movie> getAllMovies() throws Exception {
 		return movieRepo.findAll();
@@ -31,7 +38,7 @@ public class MovieService {
 		}
 	}
 	
-	public void updateMovieDetails(Movie existingMovie){
+	public void updateMovieDetails(Movie existingMovie) throws Exception{
 		try {
 			movieRepo.save(existingMovie);
 		} catch (Exception e){
