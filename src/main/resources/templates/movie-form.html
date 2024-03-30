@@ -35,31 +35,38 @@
 	</nav>
 
 	<div class="row mt-4">
-		<div class="col-3"></div>
-		<div class="col-6">
+		<div class="col-2"></div>
+		<div class="col-8">
 			<form class="container" method="post" th:action="@{/watchlist-movie}"
 				th:object="${movieObject}">
 				<h3 align="center">Submit an item</h3>
 				<hr class="col-5" />
 				<div class="form-group row mt-4">
-					<label for="movieName" class="col-3">Movie Name</label> <input
-						type="text" class="form-control col-8" id="movieName"
-						placeholder="Movie Name" th:field="*{title}" required />
+					<label for="movieName" class="col-2">Movie Name</label> <input
+						type="text" class="form-control col-6" id="movieName"
+						placeholder="Movie Name" th:field="*{title}" /> <span
+						class="col-4 text-danger" th:errors="*{title}"></span>
 				</div>
 				<div class="form-group row">
-					<label for="rating" class="col-3">Rating</label> <input type="text"
-						class="form-control col-8" id="rating"
-						placeholder="scale of 0.0 to 10.0" th:field="*{rating}" required />
+					<label for="rating" class="col-2">Rating</label> <input type="text"
+						class="form-control col-6" id="rating"
+						placeholder="scale of 0.0 to 10.0" th:field="*{rating}" /> <span
+						class="col-4 text-danger" th:errors="*{rating}"></span>
+
 				</div>
 				<div class="form-group row">
-					<label for="priority" class="col-3">Priority</label> <input
-						type="number" th:field="*{priority}" class="form-control col-8"
-						id="priority" placeholder="eg 5" required />
+					<label for="priority" class="col-2">Priority</label> <input
+						type="number" th:field="*{priority}" class="form-control col-6"
+						id="priority" placeholder="eg 5" /> <span class="col-4 text-danger"
+						th:errors="*{priority}"></span>
+
 				</div>
 				<div class="form-group row">
-					<label for="comments" class="col-3">Comments</label>
-					<textarea class="form-control col-8" th:field="*{comment}"
-						id="comments" rows="3" required></textarea>
+					<label for="comments" class="col-2">Comments</label>
+					<textarea class="form-control col-6" th:field="*{comment}"
+						id="comments" rows="3"></textarea>
+					<span class="col-4 text-danger" th:errors="*{comment}"></span>
+
 				</div>
 				<div class="row">
 					<div class="col-4"></div>
@@ -72,7 +79,7 @@
 				</div>
 			</form>
 		</div>
-		<div class="col-3"></div>
+		<div class="col-2"></div>
 	</div>
 
 	<script

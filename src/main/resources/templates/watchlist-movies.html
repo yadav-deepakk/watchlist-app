@@ -47,8 +47,8 @@
 				</tr>
 			</thead>
 			<tbody>
-				<tr th:each="movieRow: ${moviesObject}">
-					<th th:text="${movieRow.id}"></th>
+				<tr th:each="movieRow, rowStat: ${moviesObject}">
+					<th th:text="${rowStat.count}"></th>
 					<td th:text="${movieRow.title}"></td>
 					<td th:text="${movieRow.rating}"></td>
 					<td th:text="${movieRow.priority}"></td>

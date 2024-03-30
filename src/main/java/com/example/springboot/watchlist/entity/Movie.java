@@ -4,6 +4,11 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 @Entity
 public class Movie {
@@ -11,16 +16,26 @@ public class Movie {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+
+	@NotEmpty(message = "Please Enter Title")
 	private String title;
+
+	@NotNull(message = "Please Enter rating")
+	@Min(message = "Please Enter rating above 0.0", value = 0)
+	@Max(message = "Please Enter rating below 10.0", value = 10)
 	private Float rating;
-	private Integer priority;
+
+	@NotEmpty(message = "Priority can not be empty")
+	private String priority;
+
+	@Size(message = "Write comment between 4 to 50 characters.", max = 50, min = 4)
 	private String comment;
 
 	public Movie() {
 		super();
 	}
 
-	public Movie(String title, Float rating, Integer priority, String comment) {
+	public Movie(String title, Float rating, String priority, String comment) {
 		super();
 		this.title = title;
 		this.rating = rating;
@@ -52,11 +67,11 @@ public class Movie {
 		this.rating = rating;
 	}
 
-	public Integer getPriority() {
+	public String getPriority() {
 		return priority;
 	}
 
-	public void setPriority(Integer priority) {
+	public void setPriority(String priority) {
 		this.priority = priority;
 	}
 

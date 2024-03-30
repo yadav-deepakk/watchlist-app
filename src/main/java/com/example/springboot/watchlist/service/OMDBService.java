@@ -24,7 +24,7 @@ public class OMDBService {
 			ResponseEntity<ObjectNode> restResponse = restTemplate.getForEntity(ombdUrlWithReqParams, ObjectNode.class);
 			ObjectNode jsonResp = restResponse.getBody();
 			String movieRatingString = jsonResp.path("imdbRating").asText();
-			return Float.valueOf(movieRatingString);
+			return movieRatingString == null ? null : Float.valueOf(movieRatingString);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
