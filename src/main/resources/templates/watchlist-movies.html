@@ -51,7 +51,7 @@
 					<th th:text="${rowStat.count}"></th>
 					<td th:text="${movieRow.title}"></td>
 					<td th:text="${movieRow.rating}"></td>
-					<td th:text="${movieRow.priority}"></td>
+					<td th:text="${movieRow.priority.toUpperCase()}"></td>
 					<td th:text="${movieRow.comment}"></td>
 					<td><a type="button" class="btn btn-outline-info" th:href="@{/movie-entry(id=${movieRow.id})}">Update</a></td>
 				</tr>

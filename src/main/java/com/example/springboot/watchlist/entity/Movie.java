@@ -10,6 +10,9 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import com.example.springboot.watchlist.entity.validator.PriorityValidator;
+import com.example.springboot.watchlist.entity.validator.RatingValidator;
+
 @Entity
 public class Movie {
 
@@ -20,12 +23,10 @@ public class Movie {
 	@NotEmpty(message = "Please Enter Title")
 	private String title;
 
-	@NotNull(message = "Please Enter rating")
-	@Min(message = "Please Enter rating above 0.0", value = 0)
-	@Max(message = "Please Enter rating below 10.0", value = 10)
+	@RatingValidator
 	private Float rating;
 
-	@NotEmpty(message = "Priority can not be empty")
+	@PriorityValidator
 	private String priority;
 
 	@Size(message = "Write comment between 4 to 50 characters.", max = 50, min = 4)

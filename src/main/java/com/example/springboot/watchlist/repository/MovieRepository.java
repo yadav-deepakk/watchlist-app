@@ -7,5 +7,4 @@ import com.example.springboot.watchlist.entity.Movie;
 
 @Repository
 public interface MovieRepository extends JpaRepository<Movie, Long>{
-
 }
