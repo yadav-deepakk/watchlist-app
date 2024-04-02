@@ -8,6 +8,7 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -100,6 +101,25 @@ public class MovieController {
 			Map<String, String> model = new HashMap<>();
 			model.put("message", e.getMessage());
 			return new ModelAndView(errorPage, model);
+		}
+	}
+
+	@GetMapping("/deleteMovie")
+	public ModelAndView deleteMovieById(@RequestParam(name = "id", required = true) Long id) {
+		System.out.println("Delete: /deleteMovie");
+		try {
+			System.out.println("Trying to delete Id: " + id);
+			movieService.deleteMovieById(id);
+			RedirectView redirectToWatchlistMoviesPage = new RedirectView();
+			redirectToWatchlistMoviesPage.setUrl("/movies");
+			return new ModelAndView(redirectToWatchlistMoviesPage);
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("Some error occured in deletion.");
+			ModelAndView modelAndView = new ModelAndView(); 
+			modelAndView.setViewName("error-page");
+			modelAndView.addObject("message", e.getMessage());
+			return modelAndView; 
 		}
 	}
 

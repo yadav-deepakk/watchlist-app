@@ -53,7 +53,10 @@
 					<td th:text="${movieRow.rating}"></td>
 					<td th:text="${movieRow.priority.toUpperCase()}"></td>
 					<td th:text="${movieRow.comment}"></td>
-					<td><a type="button" class="btn btn-outline-info" th:href="@{/movie-entry(id=${movieRow.id})}">Update</a></td>
+					<td><a type="button" class="btn btn-outline-info"
+						th:href="@{/movie-entry(id=${movieRow.id})}">Update</a> <a
+						type="button" class="btn btn-danger"
+						th:href="@{/deleteMovie(id=${movieRow.id})}">Delete</a></td>
 				</tr>
 			</tbody>
 		</table>

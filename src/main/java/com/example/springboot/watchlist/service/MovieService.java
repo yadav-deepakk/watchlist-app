@@ -46,5 +46,14 @@ public class MovieService {
 			throw e;
 		}
 	}
+
+	public void deleteMovieById(Long id) throws Exception{
+		try {
+			movieRepo.deleteById(id);
+		} catch (Exception e){
+			e.printStackTrace();
+			throw e;
+		}
+	}
 	
 }
