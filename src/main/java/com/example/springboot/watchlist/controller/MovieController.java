@@ -4,95 +4,101 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.validation.Valid;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 import com.example.springboot.watchlist.entity.Movie;
-import com.example.springboot.watchlist.service.MovieService;
+import com.example.springboot.watchlist.exceptions.ResourceNotFoundException;
+import com.example.springboot.watchlist.service.interfaces.MovieService;
 
-@RestController
-public class MovieController {
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
-	@Autowired
-	MovieService movieService;
+@Slf4j
+@RequiredArgsConstructor
+@RequestMapping("/")
+public @Controller class MovieController {
 
-	@GetMapping("/movies")
-	public ModelAndView getAllWatchlistMovies() {
-		System.out.println("GET: /movies");
-		ModelAndView modelAndView = new ModelAndView();
+	private static final String ERROR_PAGE = "error-page";
+	private static final String ERROR_MSG = "errorMessage";
+
+	private final MovieService movieService;
+
+	@GetMapping(path = "movies", produces = "text/html")
+	public String getAllWatchlistMovies(Model model) {
+		log.info("MovieController | getAllWatchlistMovies | GET: /movies");
 		try {
-			modelAndView.setViewName("watchlist-movies");
-			List<Movie> movies = movieService.getAllMovies();
-			if (movies.size() == 0)
-				throw new Exception("Empty Movie List");
-			modelAndView.addObject("moviesObject", movies);
-			modelAndView.addObject("totalMovies", movies.size());
+			
+			List<Movie> movies = movieService.getMovieList();
+			if (movies.isEmpty())
+				throw new ResourceNotFoundException("Empty Movie List");
+			model.addAttribute("moviesObject", movies);
+			model.addAttribute("totalMovies", movies.size());
+			return "watchlist-movies";
+			
 		} catch (Exception e) {
-			e.printStackTrace();
-			modelAndView.setViewName("error-page");
-			modelAndView.addObject("message", e.getMessage());
+			
+			log.error("getAllWatchlistMovies | error:{}", e);
+			model.addAttribute(ERROR_MSG, e.getMessage());
+			return ERROR_PAGE;
 		}
-		return modelAndView;
 	}
 
-	@GetMapping("/movie-entry")
-	public ModelAndView getMovieForm(@RequestParam(name = "id", required = false) Long id) {
-		System.out.println("GET: /movie-entry");
-		ModelAndView modelAndView = new ModelAndView();
-		modelAndView.setViewName("movie-form");
-		if (id != null) {
-			System.out.println("Existing movie");
-			try {
-				modelAndView.addObject("movieObject", movieService.getMovieById(id));
-			} catch (Exception e) {
-				e.printStackTrace();
+	@GetMapping(path = "movie-entry", produces = "text/html")
+	public String getMovieForm(@RequestParam(required = false) String id, Model model) {
+		log.info("MovieController | getMovieForm | GET: /movie-entry");
+		try {
+
+			if (id != null) {
+				log.info("Existing movie.");
+				model.addAttribute("movieObject", movieService.getMovieById(id));
+			} else {
+				model.addAttribute("movieObject", new Movie());
 			}
-		} else {
-			modelAndView.addObject("movieObject", new Movie());
+
+		} catch (Exception e) {
+			log.error("getAllWatchlistMovies | error : {}", e);
+			throw e;
 		}
-		return modelAndView;
+
+		return "movie-form";
 	}
 
-	@PostMapping("/watchlist-movie")
-	public ModelAndView submitMovieDetailsAndShowAllMovies(@Valid @ModelAttribute("movieObject") Movie movie,
+	@PostMapping(path = "watchlist-movie", consumes = "application/x-www-form-urlencoded", produces = "text/html")
+	public String submitMovieDetailsAndShowAllMovies(@Valid @ModelAttribute("movieObject") Movie movie,
 			BindingResult bindingResult) {
-		System.out.println("POST: /watchlist-movies");
-		System.out.println(movie);
-
+		log.info("MovieController | POST: /watchlist-movies | submitMovieDetailsAndShowAllMovies | movie:{}", movie);
 		if (bindingResult.hasErrors()) {
-			System.out.println(bindingResult.hasErrors());
-			return new ModelAndView("/movie-form");
+			log.info("", bindingResult.hasErrors());
+			return "/movie-form";
 		}
 
 		try {
-			// if same movie has a different rating in imdb then use that one.
+			// if same movie has a different rating in omdb then use that one.
 			Float omdbRating = movieService.omdbMovieRating(movie.getTitle());
 			if (omdbRating != null) {
-				System.out.println("Ignoring entry-form rating and Using OMDB rating...");
-				System.out.println("OMDB Rating: " + omdbRating);
+				log.info("Ignoring entry-form rating and Using OMDB rating...");
+				log.info("OMDB Rating: " + omdbRating);
 				movie.setRating(omdbRating);
 			}
 
 			if (movie.getId() != null) {
-				System.out.println("Updating the details.");
+				log.info("Updating the details.");
 				movieService.updateMovieDetails(movie);
 			} else {
-				System.out.println("Saving the details.");
+				log.info("Saving the details.");
 				movieService.saveMovie(movie);
 			}
-			RedirectView redirectToWatchlistMoviesPage = new RedirectView();
-			redirectToWatchlistMoviesPage.setUrl("/movies");
-			return new ModelAndView(redirectToWatchlistMoviesPage);
+			return "redirect:/movies";
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -104,22 +110,22 @@ public class MovieController {
 		}
 	}
 
-	@GetMapping("/deleteMovie")
-	public ModelAndView deleteMovieById(@RequestParam(name = "id", required = true) Long id) {
-		System.out.println("Delete: /deleteMovie");
+	@GetMapping("deleteMovie")
+	public String deleteMovieById(@RequestParam(required = true) Long id) {
+		log.info("Delete: /deleteMovie");
 		try {
-			System.out.println("Trying to delete Id: " + id);
+			log.info("Trying to delete Id: " + id);
 			movieService.deleteMovieById(id);
 			RedirectView redirectToWatchlistMoviesPage = new RedirectView();
 			redirectToWatchlistMoviesPage.setUrl("/movies");
 			return new ModelAndView(redirectToWatchlistMoviesPage);
 		} catch (Exception e) {
 			e.printStackTrace();
-			System.out.println("Some error occured in deletion.");
-			ModelAndView modelAndView = new ModelAndView(); 
+			log.info("Some error occured in deletion.");
+			ModelAndView modelAndView = new ModelAndView();
 			modelAndView.setViewName("error-page");
 			modelAndView.addObject("message", e.getMessage());
-			return modelAndView; 
+			return modelAndView;
 		}
 	}
 

@@ -1,7 +1,7 @@
-package com.example.springboot.watchlist.entity.validator;
+package com.example.springboot.watchlist.pojo.validator;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 public class PriorityValidationLogic implements ConstraintValidator<PriorityValidator, String> {
 

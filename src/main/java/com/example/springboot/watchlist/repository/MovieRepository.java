@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 import com.example.springboot.watchlist.entity.Movie;
 
 @Repository
-public interface MovieRepository extends JpaRepository<Movie, Long>{
+public interface MovieRepository extends JpaRepository<Movie, String>{
 }

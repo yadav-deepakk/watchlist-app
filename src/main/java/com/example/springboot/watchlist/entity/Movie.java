@@ -1,29 +1,33 @@
 package com.example.springboot.watchlist.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import org.hibernate.annotations.UuidGenerator;
 
-import com.example.springboot.watchlist.entity.validator.PriorityValidator;
-import com.example.springboot.watchlist.entity.validator.RatingValidator;
+import com.example.springboot.watchlist.pojo.validator.MovieRatingValidator;
+import com.example.springboot.watchlist.pojo.validator.PriorityValidator;
 
-@Entity
-public class Movie {
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public @Entity class Movie {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	@UuidGenerator
+	private String id;
 
 	@NotEmpty(message = "Please Enter Title")
 	private String title;
 
-	@RatingValidator
+	@MovieRatingValidator
 	private Float rating;
 
 	@PriorityValidator
@@ -32,60 +36,4 @@ public class Movie {
 	@Size(message = "Write comment between 4 to 50 characters.", max = 50, min = 4)
 	private String comment;
 
-	public Movie() {
-		super();
-	}
-
-	public Movie(String title, Float rating, String priority, String comment) {
-		super();
-		this.title = title;
-		this.rating = rating;
-		this.priority = priority;
-		this.comment = comment;
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public String getTitle() {
-		return title;
-	}
-
-	public void setTitle(String title) {
-		this.title = title;
-	}
-
-	public Float getRating() {
-		return rating;
-	}
-
-	public void setRating(Float rating) {
-		this.rating = rating;
-	}
-
-	public String getPriority() {
-		return priority;
-	}
-
-	public void setPriority(String priority) {
-		this.priority = priority;
-	}
-
-	public String getComment() {
-		return comment;
-	}
-
-	public void setComment(String comment) {
-		this.comment = comment;
-	}
-
-	@Override
-	public String toString() {
-		return "Movie [id=" + id + ", title=" + title + "]";
-	}
 }
