@@ -13,6 +13,7 @@
 </head>
 
 <body class="text-monospace">
+	
 	<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
 		<a class="navbar-brand" href="#">Movie Entry</a>
 		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
@@ -22,10 +23,14 @@
 
 		<div class="collapse navbar-collapse" id="navbarSupportedContent">
 			<ul class="navbar-nav ml-4">
-				<li class="nav-item"><a class="nav-link" href="./">Home <span class="sr-only">(current)</span></a></li>
-				<li class="nav-item active"><a class="nav-link" href="#">Entry</a>
+				<li class="nav-item">
+					<a class="nav-link" href="./">Home <span class="sr-only">(current)</span></a>
 				</li>
-				<li class="nav-item"><a class="nav-link" href="./movies">Movies</a>
+				<li class="nav-item active">
+					<a class="nav-link" href="#">Entry</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="./movies">Movies</a>
 				</li>
 			</ul>
 		</div>
@@ -34,34 +39,36 @@
 	<div class="row mt-4">
 		<div class="col-2"></div>
 		<div class="col-8">
-			<form class="container" method="post" th:action="@{/watchlist-movie}" th:object="${movieObject}">
+			<form class="container" method="post" th:action="@{/submitMovie}" th:object="${movieObject}">
 				<h3 class="text-center">Submit an item</h3>
 				<hr class="col-5" />
 				<div class="form-group row mt-4">
-					<label for="movieName" class="col-2">Movie Name</label> <input type="text"
-						class="form-control col-6" id="movieName" placeholder="Movie Name" th:field="*{title}" /> <span
-						class="col-4 text-danger" th:errors="*{title}"></span>
+					<label for="movieName" class="col-2">Movie Name</label>
+					<input type="text" class="form-control col-6" id="movieName" placeholder="Movie Name"
+						th:field="*{title}" />
+					<span class="col-4 text-danger" th:errors="*{title}"></span>
 				</div>
+
 				<div class="form-group row">
 					<label for="rating" class="col-2">Rating</label>
-					<input type="text" class="form-control col-6" id="rating" placeholder="scale of 0.0 to 10.0"
+					<input id="rating" type="text" class="form-control col-6" placeholder="scale of 0.0 to 10.0"
 						th:field="*{rating}" />
 					<span class="col-4 text-danger" th:errors="*{rating}"></span>
-
 				</div>
+
 				<div class="form-group row">
 					<label for="priority" class="col-2">Priority</label>
 					<input type="text" id="priority" th:field="*{priority}" class="form-control col-6"
 						placeholder="L|M|H" />
 					<span class="col-4 text-danger" th:errors="*{priority}"></span>
-
 				</div>
+				
 				<div class="form-group row">
 					<label for="comments" class="col-2">Comments</label>
-					<textarea class="form-control col-6" th:field="*{comment}" id="comments" rows="3"></textarea>
+					<textarea id="comments" th:field="*{comment}" class="form-control col-6" rows="3"></textarea>
 					<span class="col-4 text-danger" th:errors="*{comment}"></span>
-
 				</div>
+				
 				<div class="row">
 					<div class="col-4"></div>
 					<div class="col-4">

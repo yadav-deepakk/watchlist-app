@@ -1,8 +1,6 @@
 package com.example.springboot.watchlist.controller;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,8 +10,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.view.RedirectView;
 
 import com.example.springboot.watchlist.entity.Movie;
 import com.example.springboot.watchlist.exceptions.ResourceNotFoundException;
@@ -29,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 public @Controller class MovieController {
 
 	private static final String ERROR_PAGE = "error-page";
-	private static final String ERROR_MSG = "errorMessage";
+	private static final String ERROR_MSG_PARAM = "errorMessage";
 
 	private final MovieService movieService;
 
@@ -37,18 +33,17 @@ public @Controller class MovieController {
 	public String getAllWatchlistMovies(Model model) {
 		log.info("MovieController | getAllWatchlistMovies | GET: /movies");
 		try {
-			
 			List<Movie> movies = movieService.getMovieList();
 			if (movies.isEmpty())
 				throw new ResourceNotFoundException("Empty Movie List");
 			model.addAttribute("moviesObject", movies);
 			model.addAttribute("totalMovies", movies.size());
-			return "watchlist-movies";
-			
+			return "movies";
+
 		} catch (Exception e) {
-			
-			log.error("getAllWatchlistMovies | error:{}", e);
-			model.addAttribute(ERROR_MSG, e.getMessage());
+
+			log.error("getAllWatchlistMovies | error:{}", e.getMessage(), e);
+			model.addAttribute(ERROR_MSG_PARAM, e.getMessage());
 			return ERROR_PAGE;
 		}
 	}
@@ -66,66 +61,70 @@ public @Controller class MovieController {
 			}
 
 		} catch (Exception e) {
-			log.error("getAllWatchlistMovies | error : {}", e);
+			log.error("getMovieForm | error : {}", e.getMessage(), e);
 			throw e;
 		}
 
 		return "movie-form";
 	}
 
-	@PostMapping(path = "watchlist-movie", consumes = "application/x-www-form-urlencoded", produces = "text/html")
+	// same method is used to saveMovie and updateMovie
+	@PostMapping(path = "submitMovie", consumes = "application/x-www-form-urlencoded", produces = "text/html")
 	public String submitMovieDetailsAndShowAllMovies(@Valid @ModelAttribute("movieObject") Movie movie,
-			BindingResult bindingResult) {
-		log.info("MovieController | POST: /watchlist-movies | submitMovieDetailsAndShowAllMovies | movie:{}", movie);
+			BindingResult bindingResult, Model model) {
+		log.info("POST: /submitMovie");
+		log.info("MovieController | submitMovieDetailsAndShowAllMovies | movie: {}", movie);
+
 		if (bindingResult.hasErrors()) {
-			log.info("", bindingResult.hasErrors());
+			log.info("Form has errors : {}", bindingResult.getAllErrors().toString());
 			return "/movie-form";
 		}
 
 		try {
-			// if same movie has a different rating in omdb then use that one.
-			Float omdbRating = movieService.omdbMovieRating(movie.getTitle());
+			// if same movie has a different rating in OMDB then use omdbRating.
+			Float omdbRating = movieService.getOMDBRating(movie.getTitle());
 			if (omdbRating != null) {
 				log.info("Ignoring entry-form rating and Using OMDB rating...");
 				log.info("OMDB Rating: " + omdbRating);
 				movie.setRating(omdbRating);
 			}
 
-			if (movie.getId() != null) {
-				log.info("Updating the details.");
-				movieService.updateMovieDetails(movie);
-			} else {
-				log.info("Saving the details.");
+			if (movie.getId() == null || movie.getId().isEmpty()) {
+				log.info("id is null or empty, saving new movie details.");
+			    movie.setId(null); // Important: ensure null for UUID generation
 				movieService.saveMovie(movie);
+			} else {
+				log.info("id is not null, updating movie details.");
+				movieService.updateMovie(movie.getId(), movie);
 			}
+
 			return "redirect:/movies";
 
 		} catch (Exception e) {
-			e.printStackTrace();
-			RedirectView errorPage = new RedirectView();
-			errorPage.setUrl("error-page");
-			Map<String, String> model = new HashMap<>();
-			model.put("message", e.getMessage());
-			return new ModelAndView(errorPage, model);
+
+			log.info("MovieController | submitMovieDetailsAndShowAllMovies | error: {}", e.getMessage(), e);
+			model.addAttribute(ERROR_MSG_PARAM, e.getMessage());
+			return ERROR_PAGE;
 		}
 	}
 
 	@GetMapping("deleteMovie")
-	public String deleteMovieById(@RequestParam(required = true) Long id) {
-		log.info("Delete: /deleteMovie");
+	public String deleteMovieById(@RequestParam(required = true) String id, Model model) {
+		log.info("GET: /deleteMovie");
+		log.info("MovieController | deleteMovie | id: {}", id);
+
 		try {
-			log.info("Trying to delete Id: " + id);
-			movieService.deleteMovieById(id);
-			RedirectView redirectToWatchlistMoviesPage = new RedirectView();
-			redirectToWatchlistMoviesPage.setUrl("/movies");
-			return new ModelAndView(redirectToWatchlistMoviesPage);
+			boolean success = movieService.deleteMovieById(id);
+			if (!success) {
+				throw new Exception("error occured in movie deltion.");
+			}
+			return "redirect:/movies";
+
 		} catch (Exception e) {
-			e.printStackTrace();
-			log.info("Some error occured in deletion.");
-			ModelAndView modelAndView = new ModelAndView();
-			modelAndView.setViewName("error-page");
-			modelAndView.addObject("message", e.getMessage());
-			return modelAndView;
+
+			log.info("MovieController | deleteMovie | error: {}", e.getMessage(), e);
+			model.addAttribute(ERROR_MSG_PARAM, e.getMessage());
+			return ERROR_PAGE;
 		}
 	}
 

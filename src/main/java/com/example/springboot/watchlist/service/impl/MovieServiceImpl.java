@@ -24,7 +24,7 @@ public @Service class MovieServiceImpl implements MovieService {
 	private final MovieRepository movieRepo;
 	private final OMDBService omdbService;
 
-	public Float omdbMovieRating(String title)
+	public Float getOMDBRating(String title)
 			throws HttpClientErrorException, HttpServerErrorException, HttpConnectTimeoutException {
 		log.info("MovieServiceImpl || omdbMovieRating | title: {}", title);
 		return omdbService.getMovieRating(title);
@@ -52,7 +52,7 @@ public @Service class MovieServiceImpl implements MovieService {
 		try {
 			return movieRepo.save(movie);
 		} catch (Exception e) {
-			log.error("MovieServiceImpl || saveMovie | error: {}", e);
+			log.error("MovieServiceImpl || saveMovie | error: {}", e.getMessage(), e);
 			throw e;
 		}
 	}
@@ -62,7 +62,7 @@ public @Service class MovieServiceImpl implements MovieService {
 		try {
 			return movieRepo.save(movie);
 		} catch (Exception e) {
-			log.error("MovieServiceImpl || updateMovie | error: {}", e);
+			log.error("MovieServiceImpl || updateMovie | error: {}", e.getMessage(), e);
 			throw e;
 		}
 	}
@@ -72,9 +72,9 @@ public @Service class MovieServiceImpl implements MovieService {
 
 		try {
 			movieRepo.deleteById(id);
-			return movieRepo.existsById(id);
+			return !movieRepo.existsById(id);
 		} catch (Exception e) {
-			log.error("MovieServiceImpl || deleteMovieById | error: {}", e);
+			log.error("MovieServiceImpl || deleteMovieById | error: {}", e.getMessage(), e);
 			throw e;
 		}
 	}

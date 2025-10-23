@@ -21,29 +21,29 @@ public @Service class OMDBServiceImpl implements OMDBService {
 
 	private final OMDBConfig omdbConfig;
 	private final RestTemplate restTemplate;
-	
+
 	@Override
-	public String getMovie(String title) 
+	public String getMovie(String title)
 			throws HttpConnectTimeoutException, HttpClientErrorException, HttpServerErrorException {
-		// TODO: create a method to fetch OMDB movie . 
+		log.info("OMDBServiceImpl || getMovie | title: {}", title);
 		return null;
 	}
 
 	public Float getMovieRating(String title) {
 		try {
 
-			String URL = omdbConfig.getApiUrl() + "?apikey=" + omdbConfig.getApiKey() + "&t=" + title;
-			log.info("URL: " + URL);
+			String destUrl = omdbConfig.getApiUrl() + "?apikey=" + omdbConfig.getApiKey() + "&t=" + title;
+			log.info("URL: " + destUrl);
 
-			ResponseEntity<ObjectNode> restResponse = restTemplate.getForEntity(URL, ObjectNode.class);
+			ResponseEntity<ObjectNode> restResponse = restTemplate.getForEntity(destUrl, ObjectNode.class);
 			ObjectNode jsonResp = restResponse.getBody();
-			
+
 			String movieRatingString = jsonResp.path("imdbRating").asText();
-			
+
 			return movieRatingString == null ? null : Float.valueOf(movieRatingString);
-			
+
 		} catch (Exception e) {
-			log.error("OMDBService | getMovieRating | error : {}", e);
+			log.error("OMDBService | getMovieRating | error : {}", e.getMessage(), e);
 			return null;
 		}
 
